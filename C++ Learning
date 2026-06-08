@@ -2,7 +2,7 @@
 #include <string>
 using namespace std;
 void greet(string name) {
-  cout << "Hi " << name << "\n";
+  cout << "Hi " << name << endl;
 }
 
 int main(){
