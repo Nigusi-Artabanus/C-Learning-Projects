@@ -2,10 +2,11 @@
 #include <string>
 using namespace std;
 void greet(string name) {
-  cout << "Hi " << name;
+  cout << "Hi " << name << "\n";
 }
 
 int main(){
+  string uName;
   cout << "What's your name? ";
   cin >> uName;
   greet(uName);
