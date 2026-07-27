@@ -1,6 +1,8 @@
 #include "base32.hpp"
+#include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 void base32_encode_char(const uint8_t *src, char *dst, size_t len) {
     // Implementation of base32 encoding
@@ -61,3 +63,37 @@ void base32_encode(const uint8_t *src, char *dst, size_t len){
     }
     dst[di + 8] = '\0';
 }
+
+static uint8_t base32_decode_char(char c) {
+    if (c >= 'A' && c <= 'Z') {
+        return c - 'A';
+    } else if (c >= '2' && c <= '7') {
+        return c - '2' + 26;
+    } else {
+        return 0xFF; // Invalid character
+    }
+}
+int base32_decode(const char *src, char *dst, size_t limit) {
+    int n;
+    int dsti;
+    bool end;
+
+    while (*src != '\0') {
+        uint8_t buf[8];
+        int dlen = 8;
+        for (n = 0; n < 8; ) {
+            char c = *src;
+            src++;
+
+            if (isspace(c)) {
+                continue;
+            }
+
+            buf[i] = base32_decode_char(c);
+            if (buf[i] == 0xFF) {
+                return BASE32_INCORRECT_SYMBOL;
+            }
+        }
+    }
+
+            
