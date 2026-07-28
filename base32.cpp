@@ -81,19 +81,48 @@ int base32_decode(const char *src, char *dst, size_t limit) {
     while (*src != '\0') {
         uint8_t buf[8];
         int dlen = 8;
-        for (n = 0; n < 8; ) {
+        for (int i = 0; i < 8; ) {
             char c = *src;
+
+            if (c == '\0' || c == '=') {
+                end = true;
+                dlen = n;
+                break;
+            }
+
             src++;
 
             if (isspace(c)) {
                 continue;
             }
 
-            buf[i] = base32_decode_char(c);
-            if (buf[i] == 0xFF) {
+            buf[n] = base32_decode_char(c);
+            if (buf[n] == 0xFF) {
                 return BASE32_INCORRECT_SYMBOL;
             }
+            i++;
         }
+        switch (dlen) {
+            case 8:
+                dst[dsti + 4] = (buf[6] << 5) | buf[7];
+                n++;
+            case 7:
+                dst[dsti + 3] = (buf[4] << 7) | (buf[5] << 2) | (buf[6] >> 3);
+                n++;
+            case 5:
+                dst[dsti + 2] = (buf[3] << 4) | (buf[4] >> 1);
+                n++;
+            case 4:
+                dst[dsti + 1] = (buf[1] << 6) | (buf[2] << 1) | (buf[3] >> 4);
+                n++;
+            case 2:
+                dst[dsti + 0] = (buf[0] << 3) | (buf[1] >> 2);
+                n++;
+        }
+        dsti += 5;
     }
+             
+    return n;       
+}
 
             
