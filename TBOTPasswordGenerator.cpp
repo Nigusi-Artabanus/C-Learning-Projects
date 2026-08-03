@@ -9,5 +9,9 @@ int main() {
     base32_encode((uint8_t *)src, dst, strlen(src));
     
     printf("%s\n", dst);
-return 0;
+
+    char encoded[] = "JBSWY3DPFQQHO33SNRSCC===";
+    int ndecoded = base32_decode(encoded, dst, sizeof(dst));
+    printf("%d\n", ndecoded);
+    printf("%s\n", dst);
 }

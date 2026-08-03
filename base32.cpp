@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 void base32_encode_char(const uint8_t *src, char *dst, size_t len) {
     // Implementation of base32 encoding
@@ -68,7 +69,7 @@ static uint8_t base32_decode_char(char c) {
     if (c >= 'A' && c <= 'Z') {
         return c - 'A';
     } else if (c >= '2' && c <= '7') {
-        return c - '2' + 26;
+        return 26 + c - '2';
     } else {
         return 0xFF; // Invalid character
     }
@@ -76,9 +77,12 @@ static uint8_t base32_decode_char(char c) {
 int base32_decode(const char *src, char *dst, size_t limit) {
     int n;
     int dsti;
-    bool end;
+    bool end = false;
+    n = dsti = 0;
 
-    while (*src != '\0') {
+    memset(dst, 0, limit);
+
+    while (*src != '\0' && !end) {
         uint8_t buf[8];
         int dlen = 8;
         for (int i = 0; i < 8; ) {
@@ -86,7 +90,7 @@ int base32_decode(const char *src, char *dst, size_t limit) {
 
             if (c == '\0' || c == '=') {
                 end = true;
-                dlen = n;
+                dlen = i;
                 break;
             }
 
@@ -96,12 +100,12 @@ int base32_decode(const char *src, char *dst, size_t limit) {
                 continue;
             }
 
-            buf[n] = base32_decode_char(c);
-            if (buf[n] == 0xFF) {
+            buf[i] = base32_decode_char(c);
+            if (buf[i] == 0xFF) {
                 return BASE32_INCORRECT_SYMBOL;
             }
             i++;
-        }
+        } 
         switch (dlen) {
             case 8:
                 dst[dsti + 4] = (buf[6] << 5) | buf[7];
