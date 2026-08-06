@@ -88,10 +88,8 @@ int base32_decode(const char *src, char *dst, size_t limit) {
         for (int i = 0; i < 8; ) {
             char c = *src;
 
-            if (c == '\0' || c == '=') {
-                end = true;
-                dlen = i;
-                break;
+            if (c == '\0') {
+                return BASE32_INCORRECT_PADDING;
             }
 
             src++;
@@ -100,6 +98,25 @@ int base32_decode(const char *src, char *dst, size_t limit) {
                 continue;
             }
 
+            size_t len = strlen(src);
+            if (c == '=' && i >= 2 && len < 8) {
+                if ((len) + i < 8 -1) {
+                    return BASE32_INCORRECT_PADDING;
+                }
+
+                for (int j = 0; j < 8 - 1 - i; j++) {
+                    if (len > j && src[j] != '=') {
+                        return BASE32_INCORRECT_PADDING;
+                    }
+                }
+                dlen = i;
+                end = true;
+
+                if (dlen == 1 || dlen == 3 || dlen == 6) {
+                    return BASE32_INCORRECT_PADDING;
+                }
+                break;
+            }
             buf[i] = base32_decode_char(c);
             if (buf[i] == 0xFF) {
                 return BASE32_INCORRECT_SYMBOL;
