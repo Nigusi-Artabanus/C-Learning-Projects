@@ -2,16 +2,16 @@
 #include <stdio.h>
 #include <string.h>
 
-//#define SECRET "FRERT5GY76GHVV321DASSC4HB6TH67GH"
+#define SECRET "FRERT5GY76GHVV321DASSC4HB6TH67GH"
 int main() {
-    char src[] = "Hello Base32!";
-    char dst[80];
-    base32_encode((uint8_t *)src, dst, strlen(src));
-    
-    printf("%s\n", dst);
+    uint8_t key[20];
+    base32_decode(SECRET, key, sizeof(key));
 
-    char encoded[] = "JBSWY3DPFQQHO33SNRSCC===";
-    int ndecoded = base32_decode(encoded, dst, sizeof(dst));
-    printf("%d\n", ndecoded);
-    printf("%s\n", dst);
+    for (int i = 0; i < sizeof(key); i++) {
+        printf("%02X", key[i]);
+    }
+
+    putchar('\n');
+    
+    return 0;
 }

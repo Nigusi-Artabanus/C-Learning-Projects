@@ -74,7 +74,7 @@ static uint8_t base32_decode_char(char c) {
         return 0xFF; // Invalid character
     }
 }
-int base32_decode(const char *src, char *dst, size_t limit) {
+int base32_decode(const char *src, uint8_t *dst, size_t limit) {
     int n;
     int dsti;
     bool end = false;
